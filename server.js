@@ -63,6 +63,9 @@ app.get('/',(req,res) => {
     res.send('database success connect')
 });
 
+// Determine Base URL for images
+const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+
 // --- UPDATED PRODUCT POST ROUTE ---
 // We use 'upload.single('image')' middleware to process the file
 app.post('/api/product', upload.single('image'), async (req,res) => {
@@ -72,8 +75,8 @@ app.post('/api/product', upload.single('image'), async (req,res) => {
         // If a file was uploaded, construct the URL
         let imageUrl = '';
         if (req.file) {
-            // URL will be: http://localhost:4000/uploads/filename.jpg
-            imageUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+            // URL will be: https://your-app.onrender.com/uploads/filename.jpg
+            imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
         } else {
             // Fallback if they sent a text URL (optional)
             imageUrl = req.body.image || ''; 
@@ -129,7 +132,7 @@ app.put('/api/product/:id', upload.single('image'), async (req, res) => {
 
         // If a new file is uploaded, update the image URL
         if (req.file) {
-            updateData.image = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+            updateData.image = `${baseUrl}/uploads/${req.file.filename}`;
         }
 
         const updatedProduct = await productItem.findByIdAndUpdate(id, updateData, { new: true });
